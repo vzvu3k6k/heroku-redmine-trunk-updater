@@ -4,7 +4,7 @@ require 'tmpdir'
 
 module TrunkUpdater
   class SelfRepository
-    # Rake adds sh method.
+    # Rake adds sh method to FileUtils.
     extend FileUtils
     include FileUtils
 
