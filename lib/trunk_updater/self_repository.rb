@@ -3,35 +3,48 @@ require 'shellwords'
 require 'tmpdir'
 
 module TrunkUpdater
-  module SelfRepository
-    module_function
-
+  class SelfRepository
     # Rake adds sh method.
     extend FileUtils
+    include FileUtils
 
-    def update_container(tag)
-      Dir.mktmpdir do |dir|
-        sh "git clone --depth 1 git@github.com:vzvu3k6k/heroku-redmine-trunk.git #{dir.shellescape}"
-
-        update_dockerfile(File.join(dir, 'Dockerfile'), tag)
-
-        cd dir do
-          sh git_identity_env, "git commit -am #{"Update to #{tag}".shellescape}"
-          sh 'git push'
-        end
+    def self.update_container(tag)
+      Dir.mktmpdir do |tmpdir|
+        repo = new(clone_to: tmpdir)
+        repo.clone
+        repo.update_dockerfile(tag)
+        repo.add_and_commit "Update to #{tag}"
+        repo.push
       end
     end
 
-    private
+    attr_reader :dir
 
-    def update_dockerfile(dockerfile_path, tag)
-      new_content =
-        File.read(dockerfile_path)
-            .sub(%r{^FROM vzvu3k6k/redmine:.+$}, "FROM vzvu3k6k/redmine:#{tag}")
-      File.write(dockerfile_path, new_content)
+    def initialize(clone_to: dir)
+      @dir = dir
     end
 
-    def git_identity_env
+    def clone
+      sh "git clone --depth 1 git@github.com:vzvu3k6k/heroku-redmine-trunk.git #{dir.shellescape}"
+    end
+
+    def update_dockerfile(tag)
+      filepath = File.join(dir, 'Dockerfile')
+      new_content =
+        File.read(filepath)
+            .sub(%r{^FROM vzvu3k6k/redmine:.+$}, "FROM vzvu3k6k/redmine:#{tag}")
+      File.write(filepath, new_content)
+    end
+
+    def add_and_commit(message)
+      sh identity_env, "git -C #{dir.shellescape} commit -am #{message.shellescape}"
+    end
+
+    def push
+      sh "git -C #{dir.shellescape} push"
+    end
+
+    def identity_env
       {
         'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
         'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
