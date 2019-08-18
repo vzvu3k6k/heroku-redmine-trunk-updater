@@ -8,7 +8,7 @@ module TrunkUpdater
     extend FileUtils
     include FileUtils
 
-    def self.update_container(repository, tag)
+    def self.update_image_tag(repository, tag)
       Dir.mktmpdir do |tmpdir|
         repo = clone(repository: repository, directory: tmpdir)
         repo.update_dockerfile(tag)

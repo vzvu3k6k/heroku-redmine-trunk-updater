@@ -14,7 +14,7 @@ class TrunkUpdaterController < ApplicationController
       return
     end
 
-    TrunkUpdater::SelfRepository.update_container(
+    TrunkUpdater::SelfRepository.update_image_tag(
       'git@github.com:vzvu3k6k/heroku-redmine-trunk.git',
       webhook.tag
     )
