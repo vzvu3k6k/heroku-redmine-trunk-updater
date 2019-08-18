@@ -13,8 +13,8 @@ module TrunkUpdater
           update_dockerfile(File.join(dir, 'Dockerfile'), tag)
 
           Dir.chdir dir do
-            cmd "git -C #{dir.shellescape} commit -am #{"Update to #{tag}".shellescape}", env: git_identity
-            cmd "git -C #{dir.shellescape} push"
+            cmd "git commit -am #{"Update to #{tag}".shellescape}", env: git_identity
+            cmd 'git push'
           end
         end
       end
