@@ -5,17 +5,16 @@ require 'tmpdir'
 module TrunkUpdater
   class SelfRepository
     class << self
-      # Rake adds sh method to FileUtils.
-      include FileUtils
+      include TrunkUpdater::ExtCommand
 
       def update_image_tag(repository, tag)
         Dir.mktmpdir do |dir|
-          sh "git clone --depth 1 #{repository.shellescape} #{dir.shellescape}"
+          cmd "git clone --depth 1 #{repository.shellescape} #{dir.shellescape}"
           update_dockerfile(File.join(dir, 'Dockerfile'), tag)
 
-          chdir dir do
-            sh git_identity_env, "git -C #{dir.shellescape} commit -am #{"Update to #{tag}".shellescape}"
-            sh "git -C #{dir.shellescape} push"
+          Dir.chdir dir do
+            cmd "git -C #{dir.shellescape} commit -am #{"Update to #{tag}".shellescape}", env: git_identity
+            cmd "git -C #{dir.shellescape} push"
           end
         end
       end
@@ -29,7 +28,7 @@ module TrunkUpdater
         File.write(dockerfile_path, new_content)
       end
 
-      def git_identity_env
+      def git_identity
         {
           'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
           'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
