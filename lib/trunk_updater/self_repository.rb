@@ -8,24 +8,24 @@ module TrunkUpdater
     extend FileUtils
     include FileUtils
 
-    def self.update_container(tag)
+    def self.update_container(repository, tag)
       Dir.mktmpdir do |tmpdir|
-        repo = new(clone_to: tmpdir)
-        repo.clone
+        repo = clone(repository: repository, directory: tmpdir)
         repo.update_dockerfile(tag)
         repo.add_and_commit "Update to #{tag}"
         repo.push
       end
     end
 
-    attr_reader :dir
-
-    def initialize(clone_to: dir)
-      @dir = dir
+    def self.clone(repository:, directory:)
+      sh "git clone --depth 1 #{repository.shellescape} #{directory.shellescape}"
+      new(directory)
     end
 
-    def clone
-      sh "git clone --depth 1 git@github.com:vzvu3k6k/heroku-redmine-trunk.git #{dir.shellescape}"
+    attr_reader :dir
+
+    def initialize(dir)
+      @dir = dir
     end
 
     def update_dockerfile(tag)
