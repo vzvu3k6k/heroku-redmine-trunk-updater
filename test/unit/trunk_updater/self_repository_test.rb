@@ -1,13 +1,5 @@
-require 'open3'
-
 class SelfRepositoryTest < ActiveSupport::TestCase
-  def cmd(command)
-    output, sys_exit = Open3.capture2e(command)
-    unless sys_exit.success?
-      raise "#{command} exited with code #{sys_exit.status}\noutput:\n#{output}"
-    end
-    output
-  end
+  include TrunkUpdater::ExtCommand
 
   test 'update_image_tag' do
     Dir.mktmpdir do |repo|
