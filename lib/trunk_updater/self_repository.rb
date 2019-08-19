@@ -1,6 +1,7 @@
 require 'rake'
 require 'shellwords'
 require 'tmpdir'
+require 'tempfile'
 
 module TrunkUpdater
   class SelfRepository
@@ -29,13 +30,17 @@ module TrunkUpdater
       end
 
       def git(command)
-        cmd "git #{command}", env: {
-          'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
-          'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
-          'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
-          'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com',
-          'GIT_SSH_COMMAND' => 'ssh -i <(cat $DEPLOY_KEY)'
-        }
+        Tempfile.open do |f|
+          f.write ENV['DEPLOY_KEY']
+
+          cmd "git #{command}", env: {
+            'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
+            'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
+            'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
+            'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com',
+            'GIT_SSH_COMMAND' => "ssh -i '#{f.path}'"
+          }
+        end
       end
     end
   end
