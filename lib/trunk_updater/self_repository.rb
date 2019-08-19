@@ -9,12 +9,12 @@ module TrunkUpdater
 
       def update_image_tag(repository, tag)
         Dir.mktmpdir do |dir|
-          cmd "git clone --depth 1 #{repository.shellescape} #{dir.shellescape}"
+          git "clone --depth 1 #{repository.shellescape} #{dir.shellescape}"
           update_dockerfile(File.join(dir, 'Dockerfile'), tag)
 
           Dir.chdir dir do
-            cmd "git commit -am #{"Update to #{tag}".shellescape}", env: git_identity
-            cmd 'git push'
+            git "commit -am #{"Update to #{tag}".shellescape}"
+            git 'push'
           end
         end
       end
@@ -28,12 +28,13 @@ module TrunkUpdater
         File.write(dockerfile_path, new_content)
       end
 
-      def git_identity
-        {
+      def git(command)
+        cmd "git #{command}", env: {
           'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
           'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
           'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
           'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com',
+          'GIT_SSH_COMMAND' => 'ssh -i <(cat $DEPLOY_KEY)'
         }
       end
     end
