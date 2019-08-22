@@ -33,12 +33,11 @@ module TrunkUpdater
         Tempfile.open do |f|
           f.write ENV['DEPLOY_KEY']
 
-          cmd "git #{command}", env: {
+          cmd %(git -c core.sshCommand="ssh -i #{f.path.shellescape}" #{command}), env: {
             'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
             'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
             'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
-            'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com',
-            'GIT_SSH_COMMAND' => "ssh -i '#{f.path}'"
+            'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com'
           }
         end
       end
