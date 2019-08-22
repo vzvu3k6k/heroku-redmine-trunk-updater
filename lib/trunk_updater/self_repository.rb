@@ -2,6 +2,7 @@ require 'rake'
 require 'shellwords'
 require 'tmpdir'
 require 'tempfile'
+require 'trunk_updater/ext_command'
 
 module TrunkUpdater
   class SelfRepository
