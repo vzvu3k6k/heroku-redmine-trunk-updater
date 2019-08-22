@@ -32,6 +32,7 @@ module TrunkUpdater
       def git(command)
         Tempfile.open do |f|
           f.write ENV['DEPLOY_KEY']
+          f.flush
 
           cmd %(git -c core.sshCommand="ssh -i #{f.path.shellescape}" #{command}), env: {
             'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
