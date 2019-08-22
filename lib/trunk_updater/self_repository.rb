@@ -34,7 +34,10 @@ module TrunkUpdater
           f.write ENV['DEPLOY_KEY']
           f.flush
 
-          cmd %(git -c core.sshCommand="ssh -i #{f.path.shellescape}" #{command}), env: {
+          # FIXME: vulnerable to MITM attack
+          ssh_configure = %(-c core.sshCommand="ssh -i #{f.path.shellescape} -o StrictHostKeyChecking=no")
+
+          cmd "git #{ssh_configure} #{command}", env: {
             'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
             'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
             'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
