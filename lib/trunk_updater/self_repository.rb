@@ -32,7 +32,7 @@ module TrunkUpdater
 
       def git(command)
         Tempfile.open do |f|
-          f.write ENV['DEPLOY_KEY']
+          f.write ENV['REDMINE_TRUNK_UPDATER_DEPLOY_KEY']
           f.flush
 
           # FIXME: vulnerable to MITM attack
