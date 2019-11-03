@@ -40,9 +40,9 @@ module TrunkUpdater
 
           cmd "git #{ssh_configure} #{command}", env: {
             'GIT_AUTHOR_NAME' => 'vzvu3k6k (bot)',
-            'GIT_AUTHOR_EMAIL' => 'vzvu3k6k@gmail.com',
+            'GIT_AUTHOR_EMAIL' => 'vzvu3k6k+bot@gmail.com',
             'GIT_COMMITTER_NAME' => 'vzvu3k6k (bot)',
-            'GIT_COMMITTER_EMAIL' => 'vzvu3k6k@gmail.com'
+            'GIT_COMMITTER_EMAIL' => 'vzvu3k6k+bot@gmail.com'
           }
         end
       end
